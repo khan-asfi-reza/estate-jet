@@ -22,7 +22,7 @@ def get_settings():
 
 
 @app.get("/")
-async def root(settings: Settings = Depends(get_settings)):
+async def root():
     return {"message": "Welcome To EstateJet"}
 
 
@@ -44,8 +44,6 @@ async def item_post(item: Item, db: Session = Depends(get_db)):
     db.refresh(db_item)
     return db_item
 
-
-app = FastAPI()
 
 html = """
 <!DOCTYPE html>
