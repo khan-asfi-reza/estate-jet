@@ -9,3 +9,5 @@
 1. FastAPI
 2. Postgresql
 3. VueJs
+
+## Database Model
