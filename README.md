@@ -11,3 +11,6 @@
 3. VueJs
 
 ## Database Model
+
+<img src="https://github.com/khan-asfi-reza/estate-jet/tree/master/design/dbdesign.png">  
+
