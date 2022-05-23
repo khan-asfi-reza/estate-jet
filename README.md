@@ -9,3 +9,7 @@
 1. FastAPI
 2. Postgresql
 3. VueJs
+
+## Database Model
+
+<img src="https://github.com/khan-asfi-reza/estate-jet/tree/master/design/dbdesign.png">  
