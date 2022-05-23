@@ -12,4 +12,4 @@
 
 ## Database Model
 
-<img src="https://github.com/khan-asfi-reza/estate-jet/tree/master/design/dbdesign.png">  
+<img src="https://raw.githubusercontent.com/khan-asfi-reza/estate-jet/master/design/dbdesign.png">  
