@@ -10,6 +10,8 @@ from estatejet.db import Base, engine
 from estatejet.dependencies import get_db
 from estatejet.models.item import Item as ItemModel
 from estatejet.schemas.item import Item
+from estatejet.apps.user.model import UserItem
+from estatejet.apps.user.schema import UserItem as UserItemSchema
 
 app = FastAPI()
 
@@ -39,6 +41,15 @@ async def item_get():
 @app.post("/item", response_model=Item)
 async def item_post(item: Item, db: Session = Depends(get_db)):
     db_item = ItemModel(**item.dict())
+    db.add(db_item)
+    db.commit()
+    db.refresh(db_item)
+    return db_item
+
+
+@app.post("/user-item", response_model=UserItemSchema)
+async def item_post(item: Item, db: Session = Depends(get_db)):
+    db_item = UserItem(**item.dict())
     db.add(db_item)
     db.commit()
     db.refresh(db_item)
