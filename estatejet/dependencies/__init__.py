@@ -11,4 +11,4 @@ def get_db():
         db.close()
 
 
-DbSession = Depends(get_db)
+DatabaseSession = Depends(get_db)

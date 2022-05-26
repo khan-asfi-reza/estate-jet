@@ -1,16 +1,12 @@
-from functools import lru_cache
 from fastapi import FastAPI
-from estatejet.config.settings import Settings
+
 from estatejet.db import Base, engine
 
 app = FastAPI()
 
 Base.metadata.create_all(bind=engine)
 
-
-@lru_cache()
-def get_settings():
-    return Settings()
+App = app
 
 
 @app.get("/")
