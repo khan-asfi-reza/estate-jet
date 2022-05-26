@@ -15,5 +15,5 @@ class TestUserModel(TestDatabase):
                                password="Password")
 
         self.assertEqual(user.email, "email@gmail.com")
-        data = User.create(self.session, user)
+        data = User.create(user)
         self.assertEqual(data.email, "email@gmail.com")
