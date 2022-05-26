@@ -1,12 +1,10 @@
-import enum
-
-from sqlalchemy import String, Integer, UniqueConstraint
 from sqlalchemy import Column
+from sqlalchemy import String, UniqueConstraint
 
-from estatejet.db import Base, IntegerEnum
+from estatejet.db import Base
 
 
-class User(Base):
+class Company(Base):
     email = Column(String, unique=True, nullable=False)
     name = Column(String, nullable=False)
     last_name = Column(String, nullable=False)
