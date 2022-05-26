@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from estatejet.db import Base, TestDatabaseLayer, Session
+from estatejet.db import Base, Session
 
 
 class TestDatabase(TestCase):
