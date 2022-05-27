@@ -3,7 +3,8 @@ import enum
 from sqlalchemy import Column
 from sqlalchemy import String, UniqueConstraint
 
-from estatejet.db import IntegerEnum, Model
+from estatejet.db import IntegerEnum
+from estatejet.db.model import Model
 
 
 # Roles For User
