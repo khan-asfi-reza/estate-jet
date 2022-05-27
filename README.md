@@ -13,3 +13,10 @@
 ## Database Model
 
 <img src="https://raw.githubusercontent.com/khan-asfi-reza/estate-jet/master/design/dbdesign.png">  
+
+## Todo
+- [x] Create User Model
+- [ ] JWT Authentication
+- [ ] JWT Security Middlewares
+- [ ] All Model Integrations
+- [ ] Model Tests
