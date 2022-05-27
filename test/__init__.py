@@ -1,14 +1,29 @@
-class Parent:
+class Another:
+    value: str
 
-    @classmethod
-    def create(cls):
-        print(cls.__name__)
-
-
-class Child(Parent):
+    def __init__(self, value):
+        self.value = value
 
     def __str__(self):
-        return "Childdds"
+        return self.value
 
 
-Child().create()
+class Parent:
+    val: Another
+
+    def __init__(self, obj: Another):
+        self.val = obj
+
+    def reset(self, obj: Another):
+        self.val = obj
+
+
+A = Parent(Another("Item 1"))
+
+B = A.val
+
+print(B)
+
+A.reset(Another("Item 2"))
+
+print(B)
