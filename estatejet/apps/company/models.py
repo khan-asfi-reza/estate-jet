@@ -1,10 +1,10 @@
 from sqlalchemy import Column
 from sqlalchemy import String, UniqueConstraint
 
-from estatejet.db import Base
+from estatejet.db.model import Model
 
 
-class Company(Base):
+class Company(Model):
     email = Column(String, unique=True, nullable=False)
     name = Column(String, nullable=False)
     last_name = Column(String, nullable=False)
