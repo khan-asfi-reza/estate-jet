@@ -14,6 +14,7 @@ class TestDatabase(TestCase):
 
     def setUp(self) -> None:
         self.session = Session
+        print(self.session)
         self.clear_db(self.session)
 
     def tearDown(self) -> None:
