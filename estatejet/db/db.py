@@ -15,7 +15,7 @@ class DatabaseSessionLayer:
 
     def __init__(self, database_url=None):
         if database_url is None:
-            database_url = Config.PYTEST_DATABASE_URL
+            database_url = Config.TEST_DATABASE_URL
 
         self.engine = create_engine(database_url)
 
