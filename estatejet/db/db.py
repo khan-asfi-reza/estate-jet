@@ -1,9 +1,7 @@
 import typing as t
-from pydantic import BaseModel
 from sqlalchemy import create_engine, Column, DateTime, func, Integer
 from sqlalchemy.ext.declarative import as_declarative, declared_attr
 from sqlalchemy.orm import sessionmaker
-from datetime import datetime
 from estatejet.config.settings import Config
 
 
@@ -13,17 +11,35 @@ class DatabaseSessionLayer:
     conn_string = None
     session = None
 
+    # Initial Method is called
     def __init__(self, database_url=None):
+        self.create_engine(database_url)
+        self.create_metadata()
+        self.create_connection()
+        self.session = self.create_session()
+
+    # Creates Engine
+    def create_engine(self, database_url=None):
         if database_url is None:
             database_url = Config.TEST_DATABASE_URL
 
         self.engine = create_engine(database_url)
 
-    def create_session(self):
+    # Creates all tables and schemas
+    def create_metadata(self):
         Base.metadata.create_all(self.engine)
+
+    # Create a database connection
+    def create_connection(self):
         self.connection = self.engine.connect()
-        self.session = sessionmaker(autocommit=False, autoflush=False, bind=self.engine)
-        return self.session()
+
+    # Initialize a session
+    def create_session(self):
+        db = sessionmaker(autocommit=False, autoflush=False, bind=self.engine)()
+        try:
+            yield db
+        finally:
+            db.close()
 
 
 class_registry: t.Dict = {}
@@ -43,23 +59,11 @@ class Base:
     def __tablename__(self) -> str:
         return self.__name__.lower()
 
-
-# Base Pydantic Model
-class BasePyModel(BaseModel):
-    id: int
-    created_on: datetime
-    updated_on: datetime
-
-
 # Global Session, Engine
-DatabaseLayer = DatabaseSessionLayer()
-Session = DatabaseLayer.create_session()
-engine = DatabaseLayer.engine
+Database = DatabaseSessionLayer()
 
 
 # On App Startup Run This Function
 async def startup():
-    global Session, DatabaseLayer, engine
-    DatabaseLayer = DatabaseSessionLayer(Config.DATABASE_URL)
-    Session = DatabaseLayer.create_session()
-    engine = DatabaseLayer.engine
+    global Database
+    Database = DatabaseSessionLayer(Config.DATABASE_URL)
