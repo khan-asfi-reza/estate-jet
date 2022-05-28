@@ -4,6 +4,23 @@ from sqlalchemy.ext.declarative import as_declarative, declared_attr
 from sqlalchemy.orm import sessionmaker
 from estatejet.config.settings import Config
 
+class_registry: t.Dict = {}
+
+
+# Base Class for models and database registry
+@as_declarative(class_registry=class_registry)
+class Base:
+    __name__: str
+    __abstract__ = True
+    id = Column(Integer, primary_key=True, index=True)
+    created_on = Column(DateTime, default=func.now())
+    updated_on = Column(DateTime, default=func.now(), onupdate=func.now())
+
+    # Generate __tablename__ automatically
+    @declared_attr
+    def __tablename__(self) -> str:
+        return self.__name__.lower()
+
 
 class DatabaseSessionLayer:
     connection = None
@@ -36,24 +53,6 @@ class DatabaseSessionLayer:
     # Initialize a session
     def create_session(self):
         return sessionmaker(autocommit=False, autoflush=False, bind=self.engine)()
-
-
-class_registry: t.Dict = {}
-
-
-# Base Class for models and database registry
-@as_declarative(class_registry=class_registry)
-class Base:
-    __name__: str
-    __abstract__ = True
-    id = Column(Integer, primary_key=True, index=True)
-    created_on = Column(DateTime, default=func.now())
-    updated_on = Column(DateTime, default=func.now(), onupdate=func.now())
-
-    # Generate __tablename__ automatically
-    @declared_attr
-    def __tablename__(self) -> str:
-        return self.__name__.lower()
 
 
 # Global Session, Engine
