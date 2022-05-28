@@ -16,7 +16,7 @@ class DatabaseSessionLayer:
         self.create_engine(database_url)
         self.create_metadata()
         self.create_connection()
-        self.session = self.create_session()
+        self.session = next(self.create_session())
 
     # Creates Engine
     def create_engine(self, database_url=None):
