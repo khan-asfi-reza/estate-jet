@@ -6,6 +6,8 @@ from estatejet.db import Base, startup, Database
 
 app = FastAPI()
 
+Base.metadata.create_all(bind=Database.engine)
+
 App = app
 
 
