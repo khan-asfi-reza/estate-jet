@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
-from estatejet.db import BasePyModel
+from estatejet.db.model import BasePyModel
 
 
 class UserBaseModel(BaseModel):
