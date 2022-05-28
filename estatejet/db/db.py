@@ -59,6 +59,7 @@ class Base:
     def __tablename__(self) -> str:
         return self.__name__.lower()
 
+
 # Global Session, Engine
 Database = DatabaseSessionLayer()
 
