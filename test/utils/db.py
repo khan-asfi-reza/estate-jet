@@ -14,7 +14,7 @@ class TestDatabase(TestCase):
             for table in reversed(meta.sorted_tables):
                 session.execute(table.delete())
             session.commit()
-        except InternalError:
+        except Exception:
             pass
 
     def setUp(self) -> None:
