@@ -1,29 +1,32 @@
+from datetime import datetime
+
 from pydantic import BaseModel
 from sqlalchemy.orm import Query
 
-from estatejet.db import Base, Session
+from estatejet.db import Base, Database
 
 
 class Model(Base):
     __abstract__ = True
+    db = Database.session
 
     @classmethod
     def create(cls, data: BaseModel):
         db_object = cls(**data.dict())
-        Session.add(db_object)
-        Session.commit()
-        Session.refresh(db_object)
+        cls.db.add(db_object)
+        cls.db.commit()
+        cls.db.refresh(db_object)
         return db_object
 
-    @staticmethod
-    def update(query: Query, **kwargs):
+    @classmethod
+    def update(cls, query: Query, **kwargs):
         for field in kwargs:
             setattr(query, field, kwargs[field])
-        Session.commit()
+        cls.db.commit()
 
     @classmethod
     def get(cls, index: int) -> Query:
-        return Session.query(cls).filter(cls.id == index).first()
+        return cls.db.query(cls).filter(cls.id == index).first()
 
     @classmethod
     def filter(cls, **kwargs) -> Query:
@@ -31,4 +34,10 @@ class Model(Base):
         for args in kwargs:
             filter_set.append(getattr(cls, args) == kwargs[args])
 
-        return Session.query(cls).filter(*filter_set)
+        return cls.db.query(cls).filter(*filter_set)
+
+
+class BasePyModel(BaseModel):
+    id: int
+    created_on: datetime
+    updated_on: datetime
