@@ -14,6 +14,7 @@ class TestDatabase(TestCase):
     def setUp(self) -> None:
         self.session = Database.session
         self.connection = Database.connection
+        Base.metadata.create_all(bind=Database.engine)
 
     def tearDown(self) -> None:
         self.clear_db(self.session)
