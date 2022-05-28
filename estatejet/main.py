@@ -2,9 +2,11 @@ from fastapi import FastAPI
 
 from estatejet.apps.user.models import User
 from estatejet.apps.user.schema import UserCreateModel
-from estatejet.db import startup
+from estatejet.db import Base, startup, Database
 
 app = FastAPI()
+
+Base.metadata.create_all(bind=Database.engine)
 
 App = app
 

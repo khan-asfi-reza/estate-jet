@@ -16,7 +16,7 @@ class DatabaseSessionLayer:
         self.create_engine(database_url)
         self.create_metadata()
         self.create_connection()
-        self.session = next(self.create_session())
+        self.session = self.create_session()
 
     # Creates Engine
     def create_engine(self, database_url=None):
@@ -35,11 +35,7 @@ class DatabaseSessionLayer:
 
     # Initialize a session
     def create_session(self):
-        db = sessionmaker(autocommit=False, autoflush=False, bind=self.engine)()
-        try:
-            yield db
-        finally:
-            db.close()
+        return sessionmaker(autocommit=False, autoflush=False, bind=self.engine)()
 
 
 class_registry: t.Dict = {}

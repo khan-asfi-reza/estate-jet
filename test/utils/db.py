@@ -9,13 +9,10 @@ class TestDatabase(TestCase):
 
     @staticmethod
     def clear_db(session):
-        try:
-            meta = Base.metadata
-            for table in reversed(meta.sorted_tables):
-                session.execute(table.delete())
-            session.commit()
-        except Exception:
-            pass
+        meta = Base.metadata
+        for table in reversed(meta.sorted_tables):
+            session.execute(table.delete())
+        session.commit()
 
     def setUp(self) -> None:
         self.session = Database.session
