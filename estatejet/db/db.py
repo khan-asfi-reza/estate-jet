@@ -60,16 +60,10 @@ class DatabaseSessionLayer:
         return next(self.init_session())
 
     # Initialize Connection and session along with engine
-    def init_all(self, database_url=None):
+    def __init__(self, database_url=None):
         self.create_engine(database_url)
         self.create_connection()
         self.session = self.get_session()
-
-    def __new__(cls, *args, **kwargs):
-        obj = super().__new__(cls, *args, **kwargs)
-        obj.init_all()
-        obj.create_metadata()
-        return obj
 
 
 # Global Session, Engine
@@ -80,3 +74,4 @@ Database = DatabaseSessionLayer()
 async def startup():
     global Database
     Database = DatabaseSessionLayer(Config.DATABASE_URL)
+    Database.create_metadata()
