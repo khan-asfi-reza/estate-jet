@@ -28,13 +28,6 @@ class DatabaseSessionLayer:
     conn_string = None
     session = None
 
-    # Initial Method is called
-    def __init__(self, database_url=None):
-        self.create_engine(database_url)
-        self.create_metadata()
-        self.create_connection()
-        self.session = self.create_session()
-
     # Creates Engine
     def create_engine(self, database_url=None):
         if database_url is None:
@@ -52,7 +45,31 @@ class DatabaseSessionLayer:
 
     # Initialize a session
     def create_session(self):
-        return sessionmaker(autocommit=False, autoflush=False, bind=self.engine)()
+        return sessionmaker(autocommit=False, autoflush=False, bind=self.engine)
+
+    # Initialize a session
+    def init_session(self):
+        session = self.create_session()
+        try:
+            yield session()
+        finally:
+            session().close()
+
+    # Gets a session
+    def get_session(self):
+        return next(self.init_session())
+
+    # Initialize Connection and session along with engine
+    def init_all(self, database_url=None):
+        self.create_engine(database_url)
+        self.create_connection()
+        self.session = self.get_session()
+
+    def __new__(cls, *args, **kwargs):
+        obj = super().__new__(cls, *args, **kwargs)
+        obj.init_all()
+        obj.create_metadata()
+        return obj
 
 
 # Global Session, Engine
