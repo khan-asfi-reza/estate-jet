@@ -27,6 +27,13 @@ class User(Model):
 
     __table_args__ = (UniqueConstraint('phone_number', 'country_code', name='contact_number'),)
 
+    def save(self, **kwargs):
+        """
+        TODO: Encrypt password
+        :param kwargs:
+        :return:
+        """
+
 # class CompanyUserRoleEnum(enum.Enum):
 #     company_admin = 1
 #     agent = 4
