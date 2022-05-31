@@ -10,7 +10,6 @@ class UserBaseModel(BaseModel):
     phone_number: str
     country_code: str
     role: int
-    password: str
 
 
 class UserRetrieveModel(BasePyModel, UserBaseModel):
@@ -18,4 +17,4 @@ class UserRetrieveModel(BasePyModel, UserBaseModel):
 
 
 class UserCreateModel(UserBaseModel):
-    pass
+    password: str
