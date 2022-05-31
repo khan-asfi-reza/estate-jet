@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
 
+from passlib.context import CryptContext
 from pydantic import BaseSettings
 import dotenv
 
@@ -17,3 +18,5 @@ class Settings(BaseSettings):
 
 
 Config = Settings()
+
+PasswordContext = CryptContext(schemes=["bcrypt"], deprecated="auto")
