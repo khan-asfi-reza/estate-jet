@@ -5,7 +5,7 @@ from starlette.testclient import TestClient
 from tortoise import Tortoise
 from tortoise.exceptions import DBConnectionError, OperationalError
 
-from db import get_tortoise_models
+from estatejet.db import get_tortoise_models
 from estatejet.main import app
 
 
