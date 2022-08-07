@@ -1,14 +1,12 @@
 import asyncio
-import os
+
 import pytest
 from starlette.testclient import TestClient
 from tortoise import Tortoise
-from tortoise.contrib.test import finalizer, initializer
 from tortoise.exceptions import DBConnectionError, OperationalError
 
-from config import settings
 from db import get_tortoise_models
-from main import app
+from estatejet.main import app
 
 
 @pytest.fixture(scope="session", autouse=True)
