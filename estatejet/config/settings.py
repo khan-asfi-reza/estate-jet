@@ -3,7 +3,6 @@ from pathlib import Path
 
 from fastapi.security import OAuth2PasswordBearer
 from passlib.context import CryptContext
-from pydantic import BaseSettings
 import dotenv
 
 dotenv.load_dotenv()

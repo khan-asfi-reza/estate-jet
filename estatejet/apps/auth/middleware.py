@@ -1,6 +1,5 @@
 from fastapi import Depends, HTTPException, status
 from jose import jwt, JWTError
-from tortoise.queryset import QuerySetSingle
 
 from estatejet.apps.auth.models import TokenData
 from estatejet.apps.users.models import Users
