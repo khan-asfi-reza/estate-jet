@@ -1,19 +1,12 @@
 from fastapi import FastAPI
+from tortoise.contrib.fastapi import register_tortoise
 
-from estatejet.apps.user.models import User
-from estatejet.apps.user.schema import UserCreateModel
-from estatejet.db import Base, startup, Database
+from apps.auth.controllers import router as auth_router
+from apps.users.controllers import router as user_router
+from config import DATABASE_URL
+from db import get_tortoise_models
 
 app = FastAPI()
-
-Base.metadata.create_all(bind=Database.engine)
-
-App = app
-
-
-@app.on_event("startup")
-async def on_startup():
-    await startup()
 
 
 @app.get("/")
@@ -21,21 +14,15 @@ async def root():
     return {"message": "Welcome To EstateJet"}
 
 
-@app.get("/create")
-def create():
-    user = UserCreateModel(email="email@gmai2l.com",
-                           first_name="First Name",
-                           last_name="Last Name",
-                           country_code="+123",
-                           phone_number="123456567",
-                           role=1,
-                           password="Password")
+app.include_router(auth_router)
+app.include_router(user_router)
 
-    data = User.create(user)
-    return {"message": "Success"}
+register_tortoise(
+    app,
+    db_url=DATABASE_URL,
+    modules={"models": get_tortoise_models()},
+    generate_schemas=True,
+    add_exception_handlers=True,
+)
 
 
-if __name__ == "__main__":
-    import uvicorn
-
-    uvicorn.run(app, host="0.0.0.0", port=8000, log_level="debug")

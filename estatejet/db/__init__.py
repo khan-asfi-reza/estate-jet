@@ -1,27 +1,28 @@
-from .db import *
-from sqlalchemy import TypeDecorator, Enum
+from typing import List
+from uuid import uuid4
+
+from tortoise.models import Model as TortoiseModel
+from tortoise import fields
+
+from estatejet.config import INSTALLED_APPS
 
 
-class IntegerEnum(TypeDecorator):
-    impl = db.Integer()
+class Model(TortoiseModel):
+    """
+    Abstract Model
+    """
+    uuid = fields.UUIDField(default=uuid4,
+                            pk=True,
+                            unique=True,
+                            index=True)
+    created_at = fields.DatetimeField(auto_now_add=True)
+    modified_at = fields.DatetimeField(auto_now=True)
 
-    @property
-    def python_type(self):
-        return int
+    class Meta:
+        abstract = True
 
-    def process_literal_param(self, value, dialect):
-        return super(self).process_literal_param(self, value, dialect)
 
-    def __init__(self, enumtype, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self._enumtype = enumtype
-
-    def process_bind_param(self, value, dialect):
-        if isinstance(value, Enum):
-            return value
-        elif isinstance(value, int):
-            return value
-        return value.value
-
-    def process_result_value(self, value, dialect):
-        return self._enumtype(value)
+def get_tortoise_models() -> List:
+    return [
+        f"estatejet.{app}.models" for app in INSTALLED_APPS
+    ]
