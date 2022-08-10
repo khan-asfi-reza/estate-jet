@@ -1,7 +1,5 @@
 [tool.pytest.ini_options]
-fixtures = [
-"extatejet/tests/conftest.py"
-]
+
 testpaths = [
-    "estatejet/tests",
+    "tests",
 ]
