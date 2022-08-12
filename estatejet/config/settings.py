@@ -8,7 +8,7 @@ import dotenv
 dotenv.load_dotenv()
 
 DATABASE_URL = os.getenv("DATABASE_URL", "DATABASE")
-PYTEST_DATABASE_URL = os.getenv("PYTEST_DATABASE_URL", "DATABASE")
+PYTEST_DATABASE_URL = os.getenv("PYTEST_DATABASE_URL", "sqlite://memory")
 ENVIRONMENT = os.getenv("ENVIRONMENT", "dev")
 CORS_ALLOWED_ORIGINS = "*"
 ROOT = Path(__file__).resolve().parent.parent.parent
