@@ -71,7 +71,7 @@ class Users(Model):
         return f"{self.first_name} {self.full_name}"
 
     class PydanticMeta:
-        exclude = ["id"]
+        exclude = ["id", 'is_verified']
 
     @classmethod
     async def create_and_save_password(cls, **user_data):
