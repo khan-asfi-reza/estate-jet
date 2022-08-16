@@ -1,35 +1,50 @@
 import pytest
-import asyncio
-
-from starlette.testclient import TestClient
+from httpx import AsyncClient
 from tortoise import Tortoise
-from tortoise.exceptions import DBConnectionError, OperationalError
+from logging import Logger
 
 from estatejet.config import PYTEST_DATABASE_URL
 from estatejet.db import get_tortoise_models
 from estatejet.main import app
 
+DB_URL = PYTEST_DATABASE_URL
 
-@pytest.fixture(scope="session", autouse=True)
-def initialize_tests(request):
-    db_url = PYTEST_DATABASE_URL
-
-    async def _init_db() -> None:
-        await Tortoise.init(db_url=db_url, modules={"modules": get_tortoise_models()})
-        try:
-            await Tortoise._drop_databases()
-        except (DBConnectionError, OperationalError):  # pragma: nocoverage
-            pass
-
-        await Tortoise.init(db_url=db_url, modules={"modules": get_tortoise_models()}, _create_db=True)
-        await Tortoise.generate_schemas(safe=False)
-
-    loop = asyncio.get_event_loop()
-    loop.run_until_complete(_init_db())
-
-    request.addfinalizer(lambda: loop.run_until_complete(Tortoise._drop_databases()))
+logger = Logger(__name__)
 
 
-@pytest.fixture()
-def client() -> TestClient:
-    return TestClient(app)
+async def init_db(db_url, create_db: bool = False, schemas: bool = False) -> None:
+    """Initial database connection"""
+    await Tortoise.init(
+        db_url=db_url, modules={"models": get_tortoise_models()}, _create_db=create_db
+    )
+    if create_db:
+        logger.info(f"Database created! {db_url = }", )
+    if schemas:
+        await Tortoise.generate_schemas()
+        logger.info("Success to generate schemas")
+
+
+async def init(db_url: str = DB_URL):
+    """
+    Initialize Database
+    """
+    await init_db(db_url, True, True)
+
+
+@pytest.fixture(scope="function")
+def anyio_backend():
+    return "asyncio"
+
+
+@pytest.fixture(scope="function")
+async def client():
+    async with AsyncClient(app=app, base_url="http://test") as client:
+        logger.info("Client is ready")
+        yield client
+
+
+@pytest.fixture(scope="function", autouse=True)
+async def initialize_tests():
+    await init()
+    yield
+    await Tortoise._drop_databases()
