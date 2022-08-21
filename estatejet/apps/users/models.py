@@ -1,3 +1,4 @@
+import inspect
 import re
 from enum import Enum
 from uuid import uuid4
@@ -6,7 +7,7 @@ import tortoise.exceptions
 from tortoise import fields
 from tortoise.contrib.pydantic import pydantic_model_creator
 from tortoise.exceptions import ValidationError
-from tortoise.models import Model
+from estatejet.db import AbstractModel, PydanticAbstract
 
 from estatejet.apps.users.helpers import get_password_hash
 
@@ -51,13 +52,10 @@ class RoleEnum(str, Enum):
     STAFF = "STAFF"
 
 
-class Users(Model):
+class Users(AbstractModel):
     """
     The User model
     """
-    uuid = fields.UUIDField(default=uuid4, pk=True, unique=True, index=True)
-    created_at = fields.DatetimeField(auto_now_add=True)
-    modified_at = fields.DatetimeField(auto_now=True)
     email = fields.CharField(max_length=32, unique=True, validators=[validate_email])
     first_name = fields.CharField(max_length=255, null=False)
     last_name = fields.CharField(max_length=255, null=False)
@@ -71,7 +69,7 @@ class Users(Model):
         return f"{self.first_name} {self.full_name}"
 
     class PydanticMeta:
-        exclude = ["id", 'is_verified']
+        exclude = ['is_verified']
 
     @classmethod
     async def create_and_save_password(cls, **user_data):
@@ -93,4 +91,4 @@ class Users(Model):
 
 UserPydantic = pydantic_model_creator(Users, name="User", exclude=('password',))
 
-UserInPydantic = pydantic_model_creator(Users, name="UserIn", exclude_readonly=True)
+UserInPydantic = pydantic_model_creator(Users, name="UserIn", exclude_readonly=True, )
