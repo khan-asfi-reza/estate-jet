@@ -19,7 +19,9 @@ ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 INSTALLED_APPS = [
-    'apps.users'
+    'apps.users',
+    'apps.company',
+
 ]
 
 PasswordContext = CryptContext(schemes=["bcrypt"], deprecated="auto")
