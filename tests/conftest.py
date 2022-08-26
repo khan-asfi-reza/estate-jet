@@ -5,7 +5,12 @@ from importlib import import_module
 
 from pathlib import Path
 
-from tests.fixtures.factories import TortoiseFactory, register
+from tests.fixtures.factories import (
+    TortoiseFactory,
+    FixtureFactory,
+    register_model_factory,
+    register_data_factory
+)
 
 PATH = Path(__file__).resolve().parent
 
@@ -33,12 +38,13 @@ factories = [
     if not is_pkg and not name.startswith("_")
 ]
 
-model_factories = []
-
 for factory in factories:
     module = import_module(factory)
     for cls in inspect.getmembers(module, inspect.isclass):
         klass = cls[1]
         if issubclass(klass, TortoiseFactory) and klass is not TortoiseFactory:
-            func, name = register(klass)
+            func, name = register_model_factory(klass)
+            globals()[name] = func
+        elif issubclass(klass, FixtureFactory) and klass is not FixtureFactory:
+            func, name = register_data_factory(klass)
             globals()[name] = func

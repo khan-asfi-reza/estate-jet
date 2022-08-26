@@ -18,7 +18,7 @@ async def create_user(user: UserInPydantic):
         return await UserPydantic.from_tortoise_orm(
             user_obj
         )
-    except tortoise.exceptions.ValidationError as e:
+    except (tortoise.exceptions.ValidationError or tortoise.exceptions.IntegrityError) as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"{e.__str__()}",

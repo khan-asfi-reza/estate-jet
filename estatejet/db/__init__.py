@@ -1,13 +1,13 @@
+import datetime
 from typing import List
-from uuid import uuid4
-
+from uuid import UUID, uuid4
 from tortoise.models import Model as TortoiseModel
 from tortoise import fields
 
 from estatejet.config import INSTALLED_APPS
 
 
-class Model(TortoiseModel):
+class AbstractModel(TortoiseModel):
     """
     Abstract Model
     """
@@ -20,6 +20,12 @@ class Model(TortoiseModel):
 
     class Meta:
         abstract = True
+
+
+class PydanticAbstract:
+    uuid: UUID
+    created_at: datetime.datetime
+    updated_at: datetime.datetime
 
 
 def get_tortoise_models() -> List:
