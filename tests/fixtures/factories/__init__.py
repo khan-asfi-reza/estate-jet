@@ -1,8 +1,5 @@
-import asyncio
 import inspect
-from enum import Enum
-from functools import wraps
-from typing import TypeAlias, Type, Union
+from typing import TypeAlias, Type, Union, Optional
 from uuid import uuid4
 
 import inflection as inflection
@@ -14,10 +11,13 @@ from tortoise import Model
 class Faker:
     fake = PytestFaker()
 
-    def __init__(self, key=None, value=None):
+    def __init__(self, key=None, value=None, args=None):
         """
         Call
         """
+        if not args:
+            args = []
+        self.args = args
         self.provider = None
         self.value = value
 
@@ -45,7 +45,7 @@ class Faker:
         Returns: generated Value
         """
         if self.provider:
-            return self.provider()
+            return self.provider(*self.args)
         return self.value
 
 
@@ -65,7 +65,7 @@ class Factory:
             self.__dict__.update(entries)
 
     def __init__(self):
-        self.attributes = None
+        self.attributes: Optional[dict] = None
 
     async def set_attributes(self):
         self.attributes = await self.__get_attributes()
@@ -76,12 +76,20 @@ class Factory:
         """
         attributes = inspect.getmembers(self, lambda a: not (inspect.isroutine(a)))
         attribute_value = [a for a in attributes if (
-                not (a[0].startswith('__') and a[0].endswith('__')) and a[0] not in IGNORE_ATTRS and a[
-            0] not in self.exclude)]
+                not (
+                        a[0].startswith('__')
+                        and a[0].endswith('__'))
+                and a[0] not in IGNORE_ATTRS
+                and a[0] not in self.exclude
+        )
+                           ]
         attrs = {}
         for x, y in attribute_value:
             if type(y) is Faker:
                 y = y.generate()
+            elif issubclass(y, TortoiseFactory):
+                factory = await create_factory(y)
+                y = await factory.create_object()
             setattr(self, x, y)
             attrs.update({f"{x}": y})
         self.object_set = True
@@ -92,14 +100,27 @@ class Factory:
         Get raw data as dictionary
         Returns: dict
         """
-        return self.attributes
+        if not self.attributes:
+            return {}
+        data = {}
+        for key, attr in self.attributes.items():
+            if type(attr) is Factory:
+                data.update(
+                    {
+                        key: attr.get_dict()
+                    }
+                )
+            else:
+                data.update({key: attr})
+        return data
 
     def get_data(self) -> Data:
         """
         Get data as Data Class
         Returns: Data
         """
-        return self.Data(**self.attributes)
+        data = self.get_dict()
+        return self.Data(**data)
 
 
 class FixtureFactory(Factory):
@@ -129,7 +150,10 @@ class TortoiseFactory(Factory):
         if not self.object_set:
             await self.set_attributes()
         args = self.attributes
-        return await self.create_method()(**args)
+        obj = await self.create_method()(**args)
+        setattr(obj, "get_data", self.get_data)
+        setattr(obj, "get_dict", self.get_dict)
+        return obj
 
     @classmethod
     async def create_batch(cls, number):
@@ -160,8 +184,6 @@ def register_model_factory(factory_class: FactoryType, name=""):
     async def fn():
         fact = await create_factory(factory_class)
         obj = await fact.create_object()
-        setattr(obj, "get_data", fact.get_data)
-        setattr(obj, "get_dict", fact.get_dict)
         return obj
 
     return fn, name
@@ -175,7 +197,6 @@ def register_data_factory(factory_class: DataFactoryType, name=""):
     @pytest.fixture(name=name)
     async def fn():
         fact = await create_factory(factory_class)
-        await fact.set_attributes()
         return fact
 
     return fn, name

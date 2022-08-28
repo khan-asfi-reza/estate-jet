@@ -1,10 +1,8 @@
 import pytest
-from fastapi.testclient import TestClient
-from httpx import AsyncClient
 
 from estatejet.apps.auth.helpers import verify_password
 from estatejet.apps.users.models import Users
-from tests.fixtures.factories.user_factory import UserModelFactory, UserData
+from tests.fixtures.factories.user_factory import UserModelFactory
 
 
 @pytest.mark.anyio
@@ -26,26 +24,3 @@ async def test_user_data(users):
     assert users.password != raw_data.password
     assert verify_password(raw_data.password, users.password)
 
-
-@pytest.mark.anyio
-async def test_create_user(client: AsyncClient, user_data: UserData):
-    response = await client.post(
-        "/users/",
-        json=user_data.get_dict()
-    )
-    assert response.status_code == 200, response.text
-    data = response.json()
-    assert data["email"] == user_data.email
-    assert "uuid" in data
-
-
-@pytest.mark.anyio
-async def test_user_duplicate_data_error(client: AsyncClient, user_data: UserData):
-    await test_create_user(
-        client, user_data
-    )
-    response = await client.post(
-        "/users/",
-        json=user_data.get_dict()
-    )
-    assert response.status_code == 422

@@ -20,9 +20,7 @@ app.include_router(user_router)
 register_tortoise(
     app,
     db_url=DATABASE_URL,
-    modules={"models": get_tortoise_models()},
+    modules=get_tortoise_models(),
     generate_schemas=True,
     add_exception_handlers=True,
 )
-
-

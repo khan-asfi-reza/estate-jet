@@ -15,7 +15,7 @@ logger = Logger(__name__)
 async def init_db(db_url, create_db: bool = False, schemas: bool = False) -> None:
     """Initial database connection"""
     await Tortoise.init(
-        db_url=db_url, modules={"models": get_tortoise_models()}, _create_db=create_db
+        db_url=db_url, modules=get_tortoise_models(), _create_db=create_db
     )
     if create_db:
         logger.info(f"Database created! {db_url = }", )

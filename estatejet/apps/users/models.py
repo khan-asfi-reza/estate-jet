@@ -1,15 +1,13 @@
-import inspect
 import re
 from enum import Enum
-from uuid import uuid4
 
 import tortoise.exceptions
 from tortoise import fields
 from tortoise.contrib.pydantic import pydantic_model_creator
 from tortoise.exceptions import ValidationError
-from estatejet.db import AbstractModel, PydanticAbstract
 
 from estatejet.apps.users.helpers import get_password_hash
+from estatejet.db import AbstractModel
 
 
 def validate_email(email: str):

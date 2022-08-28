@@ -28,7 +28,7 @@ class PydanticAbstract:
     updated_at: datetime.datetime
 
 
-def get_tortoise_models() -> List:
-    return [
-        f"estatejet.{app}.models" for app in INSTALLED_APPS
-    ]
+def get_tortoise_models() -> dict:
+    return {
+        app.split('.')[-1]: [f"estatejet.{app}.models"] for app in INSTALLED_APPS
+    }
